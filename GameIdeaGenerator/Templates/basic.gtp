@@ -1,0 +1,84 @@
+Template
+    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where you have to @Action@ {@NounAdj} @Noun*@
+    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where @Noun*@ @Action*@ {@NounAdj} @Noun*@
+    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where [a,an] @Noun@ @Action*@
+    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where [a,an] @Noun@ Searches for (a,their) {@NounAdj} @Noun*@
+
+Genre
+    RPG
+    Action
+    Adventure
+    Rythm
+    Racing
+    Dating
+    Clicker
+    Idle
+    
+Character
+    Pirate
+    Princess
+    King
+    Queen
+    Boy
+    Girl
+    Man
+    Woman
+    Civilian
+    Spy
+    Villain
+    Hacker
+    
+CharAdj
+    Happy
+    Unhappy
+    Sad
+    Angry
+    Evil
+    Civilized
+    Uncivilized
+    Emotionless
+    Famous
+    Tall
+    Kind
+    Mean
+    Deceitful
+    Spiteful
+    Calm
+    Lost
+    
+Noun : Character
+    Pineapple
+    Grape
+    Car
+    Plane
+    Vehicle
+    Coconut
+    Village
+    Sandwich
+    Lightbulb
+    Candle
+    Tomato
+    Watermelon
+    [Person,People]
+    [Cactus,Cacti]
+    
+NounAdj
+    Big
+    Small
+    Gross
+    Smelly
+    Tasty
+    Lost
+
+Action
+    Slap
+    Enlarge
+    Attack
+    Shoot
+    Murder
+    Destroy
+    Encourage
+    Poke
+    Enrage
+    Hack
+    Eat

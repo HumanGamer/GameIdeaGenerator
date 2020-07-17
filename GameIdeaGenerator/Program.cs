@@ -17,7 +17,9 @@ namespace GameIdeaGenerator
                 return;
             }
 
-            string result = template.Generate();
+            Random random = new Random();
+
+            string result = template.Generate(random);
             Console.WriteLine(result);
         }
     }

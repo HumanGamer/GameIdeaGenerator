@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace GameIdeaGenerator
@@ -8,17 +9,148 @@ namespace GameIdeaGenerator
     public class GameTemplate
     {
         #region Initialization
-        private Dictionary<string, List<string>> _sections;
+        protected Dictionary<string, List<string>> Sections;
 
         private GameTemplate()
         {
-            _sections = new Dictionary<string, List<string>>();
+            Sections = new Dictionary<string, List<string>>();
         }
         #endregion
 
-        public string Generate()
+        public string Generate(Random random)
         {
-            return "N/A";
+            string template = PickFrom(random, "Template");
+            template = DecideOptionals(random, template);
+            template = FillBlanks(random, template);
+            template = PickOptions(random, template);
+            template = Finalize(random, template);
+
+            template = char.ToUpper(template[0]) + template.Substring(1);
+
+            return template;
+        }
+
+        protected string Finalize(Random random, string text)
+        {
+            char[] vowels = { 'a', 'e', 'i', 'o', 'u', 'y', 'r' };
+
+            while (text.Contains('['))
+            {
+                int index = text.IndexOf('[');
+                int lastIndex = text.IndexOf(']', index);
+                string start = text.Substring(0, index);
+                string middle = text.Substring(index + 1, (lastIndex - 1) - index);
+                string end = text.Substring(lastIndex + 1);
+
+                string[] options = middle.Split(',');
+                if (options.Length != 2)
+                    throw new GenerationException("Missing comma '" + text + "'");
+
+                char letter = end.Trim().ToLower()[0];
+                if (vowels.Contains(letter))
+                    text = start + options[1] + end;
+                else
+                    text = start + options[0] + end;
+            }
+
+            return text;
+        }
+
+        protected string PickOptions(Random random, string text)
+        {
+            while (text.Contains('('))
+            {
+                int index = text.IndexOf('(');
+                int lastIndex = text.IndexOf(')', index);
+                string start = text.Substring(0, index);
+                string middle = text.Substring(index + 1, (lastIndex - 1) - index);
+                string end = text.Substring(lastIndex + 1);
+
+                string[] options = middle.Split(',');
+                if (options.Length != 2)
+                    throw new GenerationException("Missing comma '" + text + "'");
+
+                text = start + options[random.Next(0, options.Length)] + end;
+            }
+
+            return text;
+        }
+
+        protected string FillBlanks(Random random, string text)
+        {
+            string lastSection = null;
+            string lastValue = null;
+
+            while (text.Contains('@'))
+            {
+                int index = text.IndexOf('@');
+                int lastIndex = text.IndexOf('@', index + 1);
+                if (lastIndex == -1)
+                    throw new GenerationException("Mismatched '@' symbols");
+                string start = text.Substring(0, index);
+                string middle = text.Substring(index + 1, (lastIndex - 1) - index);
+                bool plural = false;
+                if (middle.EndsWith('*'))
+                {
+                    middle = middle.Substring(0, middle.Length - 1);
+                    plural = true;
+                }
+                string end = text.Substring(lastIndex + 1);
+                string picked;
+                do
+                {
+                    picked = PickFrom(random, middle, plural);
+                } while (picked == lastValue && middle == lastSection);
+                lastValue = picked;
+                lastSection = middle;
+
+                text = start + picked + end;
+            }
+
+            return text;
+        }
+
+        protected string DecideOptionals(Random random, string text)
+        {
+            while (text.Contains('{'))
+            {
+                int index = text.IndexOf('{');
+                int lastIndex = text.IndexOf('}', index);
+                string start = text.Substring(0, index);
+                string middle = text.Substring(index + 1, (lastIndex - 1) - index);
+                string end = text.Substring(lastIndex + 1);
+                if (random.Next(2) == 0)
+                    text = start + middle + end;
+                else
+                    text = start + end;
+            }
+
+            return text;
+        }
+
+        protected string CheckPlural(Random random, string text, bool plural)
+        {
+            text = text.Trim();
+            string baseText = text;
+            if (text.StartsWith('[') && text.EndsWith(']'))
+            {
+                text = text.Substring(1, text.Length - 2);
+                string[] options = text.Split(',');
+                if (options.Length != 2)
+                    throw new GenerationException("Invalid Entry '" + baseText + "'");
+                text = options[plural ? 1 : 0];
+            } else if (plural)
+                text += 's';
+            return text;
+        }
+
+        protected string PickFrom(Random random, string section, bool plural = false)
+        {
+            if (!Sections.ContainsKey(section))
+                return null;
+
+            List<string> options = Sections[section];
+            return CheckPlural(random, options[random.Next(0, options.Count)], plural);
         }
 
         #region Load
@@ -53,7 +185,7 @@ namespace GameIdeaGenerator
                     } else
                     {
                         sectionName = line.Trim();
-                        if (_sections.ContainsKey(sectionName))
+                        if (Sections.ContainsKey(sectionName))
                             throw new TemplateReadException("Duplicate Section '" + sectionName.Trim() + "'");
                         sections.Add(sectionName, new List<string>());
                     }
@@ -68,7 +200,7 @@ namespace GameIdeaGenerator
 
                 if (!sectionHeader.Contains(':'))
                 {
-                    _sections.Add(sectionHeader, data);
+                    Sections.Add(sectionHeader, data);
                     continue;
                 }
 
@@ -76,13 +208,13 @@ namespace GameIdeaGenerator
                 if (names.Length != 2)
                     throw new TemplateReadException("Invalid Section '" + sectionHeader + "'");
                 string sectionName = names[0].Trim();
-                if (_sections.ContainsKey(sectionName))
+                if (Sections.ContainsKey(sectionName))
                     throw new TemplateReadException("Duplicate Section '" + sectionName.Trim() + "'");
 
                 string sectionExtension = names[1].Trim();
                 toCheck.Add(sectionExtension, sectionName);
 
-                _sections.Add(sectionName, data);
+                Sections.Add(sectionName, data);
             }
 
             foreach (var pair in toCheck)
@@ -90,9 +222,9 @@ namespace GameIdeaGenerator
                 string from = pair.Key;
                 string target = pair.Value;
 
-                List<string> data = _sections[from];
+                List<string> data = Sections[from];
 
-                _sections[target].AddRange(data);
+                Sections[target].AddRange(data);
             }
         }
         #endregion

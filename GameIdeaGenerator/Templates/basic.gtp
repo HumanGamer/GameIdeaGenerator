@@ -1,8 +1,8 @@
 Template
-    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where you have to @Action@ {@NounAdj} @Noun*@
-    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where @Noun*@ @Action*@ {@NounAdj} @Noun*@
-    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where [a,an] @Noun@ @Action*@
-    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where [a,an] @Noun@ Searches for (a,their) {@NounAdj} @Noun*@
+    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where you have to @Action@{ @NounAdj@} @Noun*@
+    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where @Noun*@ @Action@{ @NounAdj@} @Noun*@
+    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where [a,an] @Noun@ @Action*@{ @NounAdj@} @Noun*@
+    [a,an] @Genre@{/@Genre@} game about [a,an] @CharAdj@ @Character@ where [a,an] @Noun@ Searches for (a,their){ @NounAdj@} @Noun@
 
 Genre
     RPG
@@ -16,15 +16,15 @@ Genre
     
 Character
     Pirate
-    Princess
+    [Princess,Princesses]
     King
     Queen
     Boy
     Girl
-    Man
-    Woman
+    [Man,Men]
+    [Woman,Women]
     Civilian
-    Spy
+    [Spy,Spies]
     Villain
     Hacker
     
@@ -54,7 +54,7 @@ Noun : Character
     Vehicle
     Coconut
     Village
-    Sandwich
+    [Sandwich,Sandwiches]
     Lightbulb
     Candle
     Tomato
@@ -80,5 +80,4 @@ Action
     Encourage
     Poke
     Enrage
-    Hack
     Eat

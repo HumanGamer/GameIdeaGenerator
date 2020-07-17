@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace GameIdeaGenerator
 {
@@ -29,6 +30,11 @@ namespace GameIdeaGenerator
             GameTemplate template;
             try
             {
+                if (!File.Exists("Templates/" + templateFile + ".gtp"))
+                {
+                    Console.Error.WriteLine("Error: Failed to load template '" + templateFile + "'. File does not exist!");
+                    return;
+                }
                 template = GameTemplate.LoadGameTemplate("Templates/" + templateFile + ".gtp");
             }
             catch (TemplateReadException ex)

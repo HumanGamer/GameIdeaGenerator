@@ -32,7 +32,7 @@ namespace GameIdeaGenerator
 
         protected string Finalize(Random random, string text)
         {
-            char[] vowels = { 'a', 'e', 'i', 'o', 'u', 'y', 'r' };
+            char[] vowels = { 'a', 'e', 'i', 'o', 'u' };
 
             while (text.Contains('['))
             {
